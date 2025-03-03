@@ -1,3 +1,5 @@
+pub mod schema;
+
 use rocket::http::Status;
 use rocket::serde::json::{Json, Value, json};
 
