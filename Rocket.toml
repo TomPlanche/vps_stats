@@ -1,0 +1,2 @@
+[default.databases.sqlite_database]
+url = "data/stats.sqlite"

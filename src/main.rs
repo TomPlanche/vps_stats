@@ -4,7 +4,7 @@ use rocket::{
     launch, routes,
     serde::json::{Json, Value, json},
 };
-use website_stats::ApiResponse;
+use website_stats::{ApiResponse, DbConn};
 
 /// # CORS Configuration
 /// Implements CORS (Cross-Origin Resource Sharing) headers for the application.
@@ -71,5 +71,8 @@ fn root() -> Json<Value> {
 /// The configured Rocket instance
 #[launch]
 fn rocket() -> _ {
-    rocket::build().attach(Cors).mount("/", routes![root])
+    rocket::build()
+        .attach(DbConn::fairing())
+        .attach(Cors)
+        .mount("/", routes![root])
 }
