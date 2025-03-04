@@ -17,7 +17,7 @@ use url::Url;
 ///
 /// ## Panics
 /// If the regex pattern is invalid.
-#[post("/", data = "<event_data>")]
+#[post("/", format = "application/json", data = "<event_data>")]
 pub async fn event_insert(event_data: Json<EventQuery>, conn: DbConn) -> Json<serde_json::Value> {
     let localhost_regex = Regex::new(r"http://(127\.0\.0\.1|localhost|0\.0\.0\.0|\[::1\])(:\d+)?")
         .expect("Invalid regex pattern");
