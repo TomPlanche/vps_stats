@@ -3,8 +3,20 @@ CREATE TABLE IF NOT EXISTS city (
     name TEXT NOT NULL,
     country TEXT NOT NULL,
     latitude REAL,
-    longitude REAL
+    longitude REAL,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
+
+CREATE TRIGGER IF NOT EXISTS update_city_updated_at AFTER
+UPDATE ON city FOR EACH ROW BEGIN
+UPDATE city
+SET
+    updated_at = CURRENT_TIMESTAMP
+WHERE
+    id = NEW.id;
+
+END;
 
 CREATE TABLE IF NOT EXISTS event (
     id TEXT PRIMARY KEY NOT NULL,
@@ -12,8 +24,20 @@ CREATE TABLE IF NOT EXISTS event (
     referrer TEXT,
     name TEXT NOT NULL,
     timestamp TIMESTAMP NOT NULL,
-    collector_id TEXT NOT NULL
+    collector_id TEXT NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
+
+CREATE TRIGGER IF NOT EXISTS update_event_updated_at AFTER
+UPDATE ON event FOR EACH ROW BEGIN
+UPDATE event
+SET
+    updated_at = CURRENT_TIMESTAMP
+WHERE
+    id = NEW.id;
+
+END;
 
 CREATE TABLE IF NOT EXISTS collector (
     id TEXT PRIMARY KEY NOT NULL,
@@ -22,5 +46,17 @@ CREATE TABLE IF NOT EXISTS collector (
     os TEXT,
     browser TEXT,
     timestamp TIMESTAMP NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (city_id) REFERENCES city (id)
 );
+
+CREATE TRIGGER IF NOT EXISTS update_collector_updated_at AFTER
+UPDATE ON collector FOR EACH ROW BEGIN
+UPDATE collector
+SET
+    updated_at = CURRENT_TIMESTAMP
+WHERE
+    id = NEW.id;
+
+END;
