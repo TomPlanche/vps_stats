@@ -3,9 +3,7 @@ CREATE TABLE IF NOT EXISTS city (
     name TEXT NOT NULL,
     country TEXT NOT NULL,
     latitude REAL,
-    longitude REAL,
-    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+    longitude REAL
 );
 
 CREATE TRIGGER IF NOT EXISTS update_city_updated_at AFTER
@@ -23,10 +21,7 @@ CREATE TABLE IF NOT EXISTS event (
     url TEXT NOT NULL,
     referrer TEXT,
     name TEXT NOT NULL,
-    timestamp TIMESTAMP NOT NULL,
-    collector_id TEXT NOT NULL,
-    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+    collector_id TEXT NOT NULL
 );
 
 CREATE TRIGGER IF NOT EXISTS update_event_updated_at AFTER
@@ -45,9 +40,6 @@ CREATE TABLE IF NOT EXISTS collector (
     city_id INTEGER NOT NULL,
     os TEXT,
     browser TEXT,
-    timestamp TIMESTAMP NOT NULL,
-    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (city_id) REFERENCES city (id)
 );
 

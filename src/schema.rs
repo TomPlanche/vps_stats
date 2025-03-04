@@ -17,7 +17,6 @@ diesel::table! {
         city_id -> Integer,
         os -> Nullable<Text>,
         browser -> Nullable<Text>,
-        timestamp -> Timestamp,
     }
 }
 
@@ -27,7 +26,6 @@ diesel::table! {
         url -> Text,
         referrer -> Nullable<Text>,
         name -> Text,
-        timestamp -> Timestamp,
         collector_id -> Text,
     }
 }

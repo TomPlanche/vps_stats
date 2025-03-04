@@ -1,4 +1,3 @@
-use chrono::NaiveDateTime;
 use diesel::prelude::{Identifiable, Insertable, Queryable};
 use serde::{Deserialize, Serialize};
 
@@ -13,5 +12,4 @@ pub struct Collector {
     pub city_id: i32,
     pub os: Option<String>,
     pub browser: Option<String>,
-    pub timestamp: NaiveDateTime,
 }

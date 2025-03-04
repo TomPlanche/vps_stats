@@ -1,4 +1,3 @@
-use chrono::{NaiveDateTime, Utc};
 use diesel::{
     QueryDsl, QueryResult, RunQueryDsl,
     prelude::{Associations, Identifiable, Insertable, Queryable},
@@ -18,7 +17,6 @@ pub struct Event {
     pub url: String,
     pub referrer: Option<String>,
     pub name: String,
-    pub timestamp: NaiveDateTime,
     pub collector_id: String,
 }
 
@@ -38,7 +36,6 @@ impl From<EventQuery> for Event {
             url: query.url,
             referrer: query.referrer,
             name: query.name,
-            timestamp: Utc::now().naive_utc(),
             collector_id: query.collector_id,
         }
     }
