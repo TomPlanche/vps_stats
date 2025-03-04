@@ -1,9 +1,10 @@
-use chrono::NaiveDateTime;
+use chrono::{NaiveDateTime, Utc};
 use diesel::{
     QueryDsl, QueryResult, RunQueryDsl,
     prelude::{Associations, Identifiable, Insertable, Queryable},
 };
 use serde::{Deserialize, Serialize};
+use ulid::Ulid;
 
 use crate::paginated::{Paginate, PaginationResult};
 use crate::{DbConn, models::Collector, schema::event};
@@ -22,19 +23,25 @@ pub struct Event {
 }
 
 #[derive(Deserialize)]
-pub struct EventRequest {
+#[allow(dead_code)]
+pub struct EventQuery {
     pub url: String,
+    pub referrer: Option<String>,
     pub name: String,
     pub collector_id: String,
 }
 
-#[derive(Deserialize)]
-#[allow(dead_code)]
-pub struct EventQuery {
-    url: String,
-    referrer: Option<String>,
-    name: String,
-    collector_id: String,
+impl From<EventQuery> for Event {
+    fn from(query: EventQuery) -> Self {
+        Event {
+            id: Ulid::new().to_string(),
+            url: query.url,
+            referrer: query.referrer,
+            name: query.name,
+            timestamp: Utc::now().naive_utc(),
+            collector_id: query.collector_id,
+        }
+    }
 }
 
 impl Event {

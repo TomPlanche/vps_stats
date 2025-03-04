@@ -1,20 +1,12 @@
-use crate::{ApiResponse, DbConn, models::Event, paginated::set_pagination_defaults};
-use chrono::Utc;
+use crate::{
+    ApiResponse, DbConn,
+    models::{Event, EventQuery},
+    paginated::set_pagination_defaults,
+};
 use regex::Regex;
 use rocket::{get, post, serde::json::Json};
-use serde::Deserialize;
 use serde_json::{Value, json};
-use ulid::Ulid;
 use url::Url;
-
-#[derive(Deserialize)]
-#[allow(dead_code)]
-pub struct EventQuery {
-    url: String,
-    referrer: Option<String>,
-    name: String,
-    collector_id: String,
-}
 
 /// # `event_insert`
 /// Handles POST requests to insert a new event.
@@ -44,14 +36,10 @@ pub async fn event_insert(event_data: Json<EventQuery>, conn: DbConn) -> Json<se
         Err(_) => event_data.url.trim_end_matches('/').to_string(),
     };
 
-    let new_event = Event {
-        id: Ulid::new().to_string(),
-        url: clean_url,
-        referrer: None, // You might want to add this to EventRequest
-        name: event_data.name.clone(),
-        timestamp: Utc::now().naive_utc(),
-        collector_id: event_data.collector_id.clone(),
-    };
+    let mut new_event = event_data.into_inner(); // from Json<EventQuery> to EventQuery
+    new_event.url = clean_url;
+
+    let new_event: Event = new_event.into(); // from EventQuery to Event, `: Event` not needed
 
     // Use connection to insert event
     match Event::insert(new_event, &conn).await {

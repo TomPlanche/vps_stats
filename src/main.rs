@@ -6,7 +6,7 @@ use rocket::{
 };
 use website_stats::{
     ApiResponse, DbConn,
-    routes::events::{event_get, event_insert},
+    routes::event::{event_get, event_insert},
 };
 
 /// # CORS Configuration
