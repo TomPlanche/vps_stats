@@ -8,7 +8,10 @@ use rocket::{
 use serde::Serialize;
 use website_stats::{
     ApiResponse, DbConn,
-    routes::event::{event_get, event_insert},
+    routes::{
+        city::{city_get, city_insert},
+        event::{event_get, event_insert},
+    },
 };
 
 /// # CORS Configuration
@@ -104,4 +107,5 @@ fn rocket() -> _ {
         .register("/", catchers![default_catcher])
         .mount("/", routes![root])
         .mount("/event", routes![event_insert, event_get])
+        .mount("/city", routes![city_insert, city_get])
 }
