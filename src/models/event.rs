@@ -1,3 +1,4 @@
+use chrono::NaiveDateTime;
 use diesel::{
     QueryDsl, QueryResult, RunQueryDsl,
     prelude::{Associations, Identifiable, Insertable, Queryable},
@@ -18,6 +19,7 @@ pub struct Event {
     pub referrer: Option<String>,
     pub name: String,
     pub collector_id: String,
+    pub created_at: Option<NaiveDateTime>,
 }
 
 #[derive(Deserialize)]
@@ -37,6 +39,7 @@ impl From<EventQuery> for Event {
             referrer: query.referrer,
             name: query.name,
             collector_id: query.collector_id,
+            created_at: None,
         }
     }
 }

@@ -7,6 +7,7 @@ diesel::table! {
         country -> Text,
         latitude -> Nullable<Float>,
         longitude -> Nullable<Float>,
+        created_at -> Nullable<Timestamp>,
     }
 }
 
@@ -17,6 +18,7 @@ diesel::table! {
         city_id -> Integer,
         os -> Nullable<Text>,
         browser -> Nullable<Text>,
+        created_at -> Nullable<Timestamp>,
     }
 }
 
@@ -27,10 +29,12 @@ diesel::table! {
         referrer -> Nullable<Text>,
         name -> Text,
         collector_id -> Text,
+        created_at -> Nullable<Timestamp>,
     }
 }
 
 diesel::joinable!(collector -> city (city_id));
+diesel::joinable!(event -> collector (collector_id));
 
 diesel::allow_tables_to_appear_in_same_query!(
     city,

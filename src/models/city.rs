@@ -1,3 +1,4 @@
+use chrono::NaiveDateTime;
 use diesel::prelude::{Identifiable, Insertable, Queryable};
 use serde::{Deserialize, Serialize};
 
@@ -12,4 +13,5 @@ pub struct City {
     pub country: String,
     pub latitude: Option<f32>,
     pub longitude: Option<f32>,
+    pub created_at: Option<NaiveDateTime>,
 }
