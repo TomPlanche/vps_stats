@@ -1,9 +1,11 @@
 use rocket::{
+    Request, catch, catchers,
     fairing::{Fairing, Info, Kind},
-    http::Header,
+    http::{Header, Status},
     launch, routes,
     serde::json::{Json, Value, json},
 };
+use serde::Serialize;
 use website_stats::{
     ApiResponse, DbConn,
     routes::event::{event_get, event_insert},
@@ -53,6 +55,27 @@ impl Fairing for Cors {
     }
 }
 
+#[derive(Serialize)]
+struct ErrorResponse {
+    error: ErrorDetail,
+}
+
+#[derive(Serialize)]
+struct ErrorDetail {
+    code: u16,
+    message: String,
+}
+
+#[catch(default)]
+fn default_catcher(status: Status, _req: &Request) -> Json<ErrorResponse> {
+    Json(ErrorResponse {
+        error: ErrorDetail {
+            code: status.code,
+            message: status.to_string(),
+        },
+    })
+}
+
 /// # `root`
 /// Handles GET requests to the root path ("/").
 /// Serves as a simple health check endpoint.
@@ -78,6 +101,7 @@ fn rocket() -> _ {
         .attach(DbConn::fairing())
         .attach(Cors)
         .manage(true)
+        .register("/", catchers![default_catcher])
         .mount("/", routes![root])
         .mount("/event", routes![event_insert, event_get])
 }
