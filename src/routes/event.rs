@@ -1,5 +1,6 @@
+use crate::api_response::ApiResponse;
 use crate::{
-    ApiResponse, DbConn,
+    DbConn,
     models::{Event, EventQuery},
     paginated::set_pagination_defaults,
 };

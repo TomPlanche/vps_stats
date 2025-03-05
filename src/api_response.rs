@@ -3,11 +3,13 @@ use rocket::serde::json::{Json, Value, json};
 
 /// Represents a standardized API response
 #[derive(Debug)]
+#[allow(dead_code)]
 pub struct ApiResponse {
     pub status: Status,
     pub json: Value,
 }
 
+#[allow(dead_code)]
 impl ApiResponse {
     /// # `new`
     /// Creates a new `ApiResponse` with the given status and JSON value

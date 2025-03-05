@@ -1,12 +1,12 @@
-use std::net::IpAddr;
-
+use crate::api_response::ApiResponse;
 use crate::{
-    ApiResponse, DbConn,
+    DbConn,
     models::{City, CityQuery},
     paginated::set_pagination_defaults,
 };
 use rocket::{get, post, serde::json::Json};
 use serde_json::{Value, json};
+use std::net::IpAddr;
 
 /// # `city_insert`
 /// Handles POST requests to insert a new city.

@@ -1,16 +1,18 @@
+use rocket_sync_db_pools::database;
+
 pub mod api_response;
+pub mod config;
+pub mod cors;
 pub mod models;
 pub mod paginated;
 pub mod routes;
 pub mod schema;
 pub mod services;
 
-pub use api_response::ApiResponse;
-
 /// # Database Connection Pool
 /// Provides a SQLite connection pool using rocket_sync_db_pools.
 /// This struct is used throughout the application to interact with the database.
-#[rocket_sync_db_pools::database("sqlite_database")]
+#[database("sqlite_database")]
 pub struct DbConn(diesel::SqliteConnection);
 
 // CONSTS
