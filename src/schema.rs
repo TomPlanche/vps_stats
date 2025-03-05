@@ -36,8 +36,4 @@ diesel::table! {
 diesel::joinable!(collector -> city (city_id));
 diesel::joinable!(event -> collector (collector_id));
 
-diesel::allow_tables_to_appear_in_same_query!(
-    city,
-    collector,
-    event,
-);
+diesel::allow_tables_to_appear_in_same_query!(city, collector, event,);

@@ -1,3 +1,5 @@
+use std::net::IpAddr;
+
 use crate::{
     ApiResponse, DbConn,
     models::{City, CityQuery},
@@ -11,15 +13,26 @@ use serde_json::{Value, json};
 ///
 /// ## Arguments
 /// * `city_data` - city data from request
+/// * `ip` - IP address of the client
 /// * `conn` - Database connection
 ///
 /// ## Panics
 /// If the regex pattern is invalid.
 #[post("/", format = "application/json", data = "<city_data>")]
-pub async fn city_insert(city_data: Json<CityQuery>, conn: DbConn) -> Json<Value> {
-    let city = city_data.into_inner().into();
+pub async fn city_insert(city_data: Json<CityQuery>, ip: IpAddr, conn: DbConn) -> Json<Value> {
+    let mut city: City = city_data.into_inner().into();
+    city.name = city.name.to_lowercase();
+    city.country = city.country.to_lowercase();
 
-    match City::find_or_create(city, &conn).await {
+    let existing_city =
+        City::find_by_name_and_country(city.name.clone(), city.country.clone(), &conn).await;
+
+    let new_id = match existing_city.unwrap() {
+        Some(found) => Ok(found.id.unwrap_or_default()),
+        None => City::insert(city, ip, &conn).await,
+    };
+
+    match new_id {
         Ok(id) => ApiResponse::created(json!({
             "message": &format!("City #{id} recorded successfully")
         })),

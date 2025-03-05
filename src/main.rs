@@ -100,6 +100,8 @@ fn root() -> Json<Value> {
 /// The configured Rocket instance
 #[launch]
 fn rocket() -> _ {
+    dotenv::dotenv().ok();
+
     rocket::build()
         .attach(DbConn::fairing())
         .attach(Cors)

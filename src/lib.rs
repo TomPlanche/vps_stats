@@ -3,6 +3,7 @@ pub mod models;
 pub mod paginated;
 pub mod routes;
 pub mod schema;
+pub mod services;
 
 pub use api_response::ApiResponse;
 
