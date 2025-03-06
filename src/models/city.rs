@@ -1,6 +1,6 @@
 use std::net::IpAddr;
 
-use crate::paginated::Paginate;
+use crate::{paginated::Paginate, sql_functions::lower};
 use chrono::NaiveDateTime;
 use diesel::{
     ExpressionMethods, OptionalExtension, QueryDsl, QueryResult, RunQueryDsl,
@@ -16,7 +16,7 @@ use serde::{Deserialize, Serialize};
 use crate::services::ip_location;
 use crate::{DbConn, paginated::PaginationResult, schema::city};
 
-#[derive(Deserialize, Identifiable, Insertable, Queryable, Serialize, Debug)]
+#[derive(Deserialize, Identifiable, Insertable, Queryable, Serialize, Debug, Default)]
 #[diesel(table_name = city)]
 #[serde(crate = "rocket::serde")]
 pub struct City {
@@ -136,8 +136,8 @@ impl City {
 
         conn.run(move |c| {
             city::dsl::city
-                .filter(city::dsl::name.eq(name_lower))
-                .filter(city::dsl::country.eq(country_lower))
+                .filter(lower(city::dsl::name).eq(name_lower))
+                .filter(lower(city::dsl::country).eq(country_lower))
                 .first(c)
                 .optional()
         })
@@ -155,7 +155,7 @@ impl City {
     ///
     /// ## Returns
     /// * `Result<City, reqwest::Error>` - The city info or an error
-    async fn from_ip(ip: &str) -> Result<Self, reqwest::Error> {
+    pub async fn from_ip(ip: &str) -> Result<Self, reqwest::Error> {
         let info = ip_location::get_city_info(ip).await?;
         let (latitude, longitude) = info.coordinates().unwrap_or((0.0, 0.0));
 

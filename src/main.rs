@@ -7,11 +7,12 @@ use rocket::{
     serde::json::{Json, Value, json},
 };
 use website_stats::{
-    DbConn,
+    AppState, DbConn,
     config::AppConfig,
     cors::Cors,
     routes::{
         city::{city_get, city_insert},
+        collector::stats_js,
         event::{event_get, event_insert},
     },
 };
@@ -47,15 +48,20 @@ fn root() -> Json<Value> {
 fn rocket() -> _ {
     dotenv::dotenv().ok();
 
-    let figment: Figment = AppConfig::new().into();
+    let app_config = AppConfig::new();
+    let dev_mode = app_config.dev;
+    let address = app_config.address.clone();
+    let figment: Figment = app_config.into();
+    let app_state = AppState { address, dev_mode };
 
     rocket::build()
         .configure(figment)
         .attach(DbConn::fairing())
         .attach(Cors)
-        .manage(true)
+        .manage(app_state)
         .register("/", catchers![default_catcher])
         .mount("/", routes![root])
         .mount("/event", routes![event_insert, event_get])
         .mount("/city", routes![city_insert, city_get])
+        .mount("/stats.js", routes![stats_js])
 }

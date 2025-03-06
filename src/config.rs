@@ -6,6 +6,7 @@ use rocket::figment::Figment;
 pub struct AppConfig {
     pub port: i16,
     pub address: String,
+    pub dev: bool,
 }
 
 impl AppConfig {
@@ -18,8 +19,12 @@ impl AppConfig {
             .unwrap_or("5775".to_string())
             .parse()
             .unwrap_or(5775);
+        let dev = env::var("DEV")
+            .unwrap_or("false".to_string())
+            .parse()
+            .unwrap_or(false);
 
-        Self { port, address }
+        Self { port, address, dev }
     }
 }
 

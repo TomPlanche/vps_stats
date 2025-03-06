@@ -23,7 +23,6 @@ pub struct Event {
 }
 
 #[derive(Deserialize)]
-#[allow(dead_code)]
 pub struct EventQuery {
     pub url: String,
     pub referrer: Option<String>,
