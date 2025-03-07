@@ -1,4 +1,3 @@
-use crate::api_response::ApiResponse;
 use rocket::{
     Request, catch, catchers,
     figment::Figment,
@@ -7,7 +6,8 @@ use rocket::{
     serde::json::{Json, Value, json},
 };
 use website_stats::{
-    AppState, DbConn,
+    AppState, DbConn, RequestLogger,
+    api_response::ApiResponse,
     config::AppConfig,
     cors::Cors,
     routes::{
@@ -22,9 +22,6 @@ use website_stats::{
         },
     },
 };
-
-mod api_response;
-mod cors;
 
 #[catch(default)]
 fn default_catcher(status: Status, _req: &Request) -> Json<Value> {
@@ -64,6 +61,7 @@ fn rocket() -> _ {
         .configure(figment)
         .attach(DbConn::fairing())
         .attach(Cors)
+        .attach(RequestLogger)
         .manage(app_state)
         .register("/", catchers![default_catcher])
         .mount("/", routes![root])

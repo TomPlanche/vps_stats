@@ -7,6 +7,8 @@ pub mod routes;
 pub mod schema;
 pub mod services;
 pub mod sql_functions;
+pub mod logger;
+pub mod request_logger;
 
 use rocket::http::Status;
 use rocket::request::{FromRequest, Outcome, Request};
@@ -94,3 +96,6 @@ fn parse_browser(user_agent: &str) -> String {
 pub const MAX_PER_PAGE: i64 = 100; // Prevent excessive page sizes
 pub const DEFAULT_PER_PAGE: i64 = 10;
 pub const DEFAULT_PAGE: i64 = 1;
+
+// Re-export the RequestLogger for convenience
+pub use request_logger::RequestLogger;
