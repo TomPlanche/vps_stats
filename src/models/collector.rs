@@ -8,7 +8,9 @@ use ulid::Ulid;
 
 use crate::{DbConn, schema::collector};
 
-#[derive(Queryable, Insertable, Identifiable, Serialize, Deserialize, Debug)]
+use super::Event;
+
+#[derive(Queryable, Insertable, Identifiable, Serialize, Deserialize, Debug, Clone)]
 #[diesel(table_name = collector)]
 #[serde(crate = "rocket::serde")]
 pub struct Collector {
@@ -18,6 +20,12 @@ pub struct Collector {
     pub os: Option<String>,
     pub browser: Option<String>,
     pub created_at: Option<NaiveDateTime>,
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct CollectorWithEvents {
+    pub collector: Collector,
+    pub events: Vec<Event>,
 }
 
 #[derive(Deserialize)]

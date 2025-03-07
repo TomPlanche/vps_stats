@@ -14,6 +14,7 @@ use website_stats::{
         city::{city_get, city_insert},
         collector::stats_js,
         event::{event_get, event_insert},
+        session::{get_map_data, get_sessions},
     },
 };
 
@@ -63,5 +64,6 @@ fn rocket() -> _ {
         .mount("/", routes![root])
         .mount("/event", routes![event_insert, event_get])
         .mount("/city", routes![city_insert, city_get])
+        .mount("/session", routes![get_sessions, get_map_data])
         .mount("/stats.js", routes![stats_js])
 }

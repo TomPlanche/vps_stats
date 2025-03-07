@@ -13,11 +13,17 @@ use crate::{
 /// # `stats_js`
 /// Generates the JavaScript code for analytics tracking.
 ///
+/// ## Arguments
+/// * `ip` - The IP address of the visitor
+/// * `state` - The application state
+/// * `user_agent_info` - The user agent information
+/// * `conn` - The database connection
+///
 /// ## Panics
 /// * If there is an error inserting the city into the database.
 ///
 /// ## Returns
-/// * `String` - JavaScript code for analytics tracking
+/// * `(Status, content::RawJavaScript<String>)`
 #[get("/")]
 pub async fn stats_js(
     ip: IpAddr,
