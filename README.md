@@ -14,40 +14,32 @@ Website Stats is a lightweight, privacy-friendly web analytics tool built with R
 
 ## Architecture & Diagrams
 
-The following diagrams visualize different aspects of the Website Stats system. Each diagram is defined using the D2 diagram language and can be found in the `assets` directory.
+### Database Schema
 
-### Rendering Diagrams
+![Database Schema](assets/database_schema.svg)
 
-You can render these diagrams with D2's built-in themes:
+The database schema diagram illustrates the data model with three core tables:
+- `city` - Stores geographic location data
+- `collector` - Represents a visitor session with browser and OS information
+- `event` - Tracks individual events like page views and clicks
 
-```bash
-# Install D2 if you haven't already
-# Visit https://d2lang.com/tour/install for instructions
+### System Architecture
 
-# For light theme (white background)
-d2 assets/database_schema.d2 database_schema-light.svg -t 0
+![System Architecture](assets/system_architecture.svg)
 
-# For dark theme (black background)
-d2 assets/database_schema.d2 database_schema-dark.svg -t 2
-```
+This diagram shows the overall components of the Website Stats system and how they interact, from the client-side script to the server-side API and database.
 
-### Available Diagrams
+### Data Flow
 
-1. **Database Schema** (`assets/database_schema.d2`)
-   - Illustrates the data model with three core tables (city, collector, event)
-   - Shows relationships between tables
+![Data Flow](assets/data_flow.svg)
 
-2. **System Architecture** (`assets/system_architecture.d2`)
-   - Shows the overall components and how they interact
-   - Displays the flow from client-side script to server-side API and database
+The data flow diagram traces how visitor data moves through the system, from initial collection to storage and analysis.
 
-3. **Data Flow** (`assets/data_flow.d2`)
-   - Traces how visitor data moves through the system
-   - Follows the complete flow from collection to storage and analysis
+### Sequence Diagram
 
-4. **Sequence Diagram** (`assets/sequence_diagram.d2`)
-   - Shows the temporal flow of operations when tracking a visitor
-   - Details the steps from initial page load to user interactions and page exit
+![Sequence Diagram](assets/sequence_diagram.svg)
+
+This sequence diagram shows the temporal flow of operations when tracking a visitor, from initial page load to user interactions and page exit.
 
 ## Installation
 
