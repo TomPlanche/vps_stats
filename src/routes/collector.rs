@@ -107,75 +107,93 @@ pub async fn collector_stats_js(
 fn generate_analytics_js(collector_id: &str, app_url: &str) -> String {
     format!(
         r#""use strict";
-(function() {{
-    var collectorId = "{collector_id}";
-    var appUrl = "{app_url}";
+(() => {{
+    {{
+        const collectorId = "{collector_id}";
+        const appUrl = "{app_url}";
 
-    function init() {{
-        document.addEventListener('click', function(event) {{
-            if (event.target.tagName === 'A') {{
-                var target = event.target.getAttribute('target');
-                var href = event.target.getAttribute('href');
+        function init() {{
+            {{
+                document.addEventListener("click", (event) => {{
+                    if (event.target.tagName === "A") {{
+                        const target = event.target.getAttribute("target");
+                        const href = event.target.getAttribute("href");
 
-                if (target === '_blank') {{
-                    stats_collect('leave', href);
+                        if (target === "_blank") {{
+                            stats_collect("leave", href);
+                        }}
+                    }}
+                }});
+
+                window.addEventListener("beforeunload", (event) => {{
+                    stats_collect("exit");
+                }});
+
+                // Listen for history changes
+                function wrapHistoryMethod(method) {{
+                    const original = history[method];
+                    history[method] = function (...args) {{
+                        const [state, title, url] = args;
+                        const fullUrl = new URL(url, window.location.origin)
+                            .href;
+                        console.log("📼 history", method, url, fullUrl);
+                        original.apply(this, args);
+                        stats_collect("visit", fullUrl);
+                    }};
                 }}
+
+                wrapHistoryMethod("pushState");
+                wrapHistoryMethod("replaceState");
+
+                // Listen for popstate event
+                window.addEventListener("popstate", (event) => {{
+                    stats_collect("visit", location.href);
+                }});
             }}
-        }});
-
-        window.addEventListener("beforeunload", function(event) {{
-            stats_collect('exit');
-        }});
-
-        // Listen for history changes
-        function wrapHistoryMethod(method) {{
-            var original = history[method];
-            history[method] = function(state, title, url) {{
-                var fullUrl = new URL(url, window.location.origin).href;
-                console.log("📼 history", method, url, fullUrl);
-                original.apply(this, arguments);
-                stats_collect('visit', fullUrl);
-            }};
         }}
 
-        wrapHistoryMethod('pushState');
-        wrapHistoryMethod('replaceState');
+        async function send(
+            type = "pageview",
+            url_override = null,
+            referrer = document.referrer,
+        ) {{
+            const endpoint = `${{appUrl}}/event`;
 
-        // Listen for popstate event
-        window.addEventListener('popstate', function(event) {{
-            stats_collect('visit', location.href);
+            const data = {{
+                collector_id: collectorId,
+                name: type,
+                url: url_override || window.location.href,
+                referrer: referrer,
+            }};
+
+            fetch(endpoint, {{
+                method: "POST",
+                headers: {{
+                    "Content-Type": "application/json",
+                }},
+                body: JSON.stringify(data),
+            }})
+                .then((res) => res.json())
+                .then((data) => {{
+                    // console.log("📼", data);
+                }})
+                .catch((rejected) => {{
+                    console.log("📼", "failed to collect");
+                    console.error(rejected);
+                }});
+        }}
+
+        async function stats_collect(type, url = null) {{
+            await send(type, url);
+        }}
+
+        window.stats_collect = stats_collect;
+        stats_collect("enter");
+
+        window.addEventListener("load", () => {{
+            init();
         }});
     }}
-
-    async function send(type = "pageview", url_override = null, referrer = document.referrer) {{
-        var url = new URL(appUrl + "/collect");
-
-        url.searchParams.set('collector_id', collectorId);
-        url.searchParams.set('name', type);
-        url.searchParams.set('url', url_override || window.location.href);
-        url.searchParams.set('referrer', referrer);
-
-        fetch(url)
-        .then(res => res.json())
-        .then(data => {{
-            // console.log("📼", data);
-        }})
-        .catch(rejected => {{
-            console.log("📼", "failed to collect");
-            console.error(rejected);
-        }});
-    }}
-
-    async function stats_collect(type, url = null) {{
-        await send(type, url);
-    }}
-
-    window.stats_collect = stats_collect;
-    stats_collect('enter');
-
-    window.addEventListener('load', function() {{
-        init();
-    }});
 }})();
 "#
     )
