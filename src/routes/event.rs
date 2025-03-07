@@ -30,10 +30,8 @@ pub async fn event_insert(
         .expect("Invalid regex pattern");
 
     // Block local requests in production
-    if !state.dev_mode {
-        if localhost_regex.is_match(&event_data.url) {
-            return ApiResponse::bad_request("Local URLs are not allowed in production");
-        }
+    if !state.dev_mode && localhost_regex.is_match(&event_data.url) {
+        return ApiResponse::bad_request("Local URLs are not allowed in production");
     }
 
     // Clean URL

@@ -28,7 +28,7 @@ impl Fairing for Cors {
             .get_one("Origin")
             .unwrap_or("http://localhost:5173");
 
-        Logger::info("CORS", &format!("Request from origin: {}", origin));
+        Logger::info("CORS", &format!("Request from origin: {origin}"));
 
         let allowed_origin = origin;
 

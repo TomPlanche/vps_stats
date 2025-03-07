@@ -2,7 +2,7 @@ use rocket::{
     Request, catch, catchers,
     figment::Figment,
     http::Status,
-    launch, routes,
+    launch, options, routes,
     serde::json::{Json, Value, json},
 };
 use website_stats::{
@@ -26,6 +26,13 @@ use website_stats::{
 #[catch(default)]
 fn default_catcher(status: Status, _req: &Request) -> Json<Value> {
     ApiResponse::error(status, &status.to_string())
+}
+
+/// Global handler for OPTIONS requests to support CORS preflight
+#[options("/<_..>")]
+#[must_use]
+pub fn global_options_handler() -> Status {
+    Status::NoContent
 }
 
 /// # `root`
@@ -64,7 +71,7 @@ fn rocket() -> _ {
         .attach(RequestLogger)
         .manage(app_state)
         .register("/", catchers![default_catcher])
-        .mount("/", routes![root])
+        .mount("/", routes![root, global_options_handler])
         .mount("/city", routes![city_insert, city_get])
         .mount("/event", routes![event_insert, event_get])
         .mount(

@@ -373,8 +373,6 @@ FROM event
 WHERE created_at >= DATETIME('now', '-7 days')
 GROUP BY day, hour;";
 
-    println!("Executing SQL query: {}", sql);
-
     match conn
         .run(move |c| sql_query(sql).load::<HourlyEventCounts>(c))
         .await

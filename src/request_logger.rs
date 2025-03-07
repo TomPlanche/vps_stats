@@ -27,7 +27,7 @@ impl Fairing for RequestLogger {
 
         Logger::info(
             "Request",
-            &format!("{} {} from {} ({})", method, uri, remote_addr, user_agent),
+            &format!("{method} {uri} from {remote_addr} ({user_agent})"),
         );
     }
 }

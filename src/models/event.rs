@@ -9,7 +9,7 @@ use ulid::Ulid;
 use crate::paginated::{Paginate, PaginationResult};
 use crate::{DbConn, models::Collector, schema::event};
 
-#[derive(Associations, Deserialize, Identifiable, Insertable, Queryable, Serialize)]
+#[derive(Associations, Deserialize, Identifiable, Insertable, Queryable, Serialize, Debug)]
 #[diesel(belongs_to(Collector, foreign_key = collector_id))]
 #[diesel(table_name = event)]
 #[serde(crate = "rocket::serde")]
@@ -22,7 +22,7 @@ pub struct Event {
     pub created_at: Option<NaiveDateTime>,
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Debug)]
 pub struct EventQuery {
     pub url: String,
     pub referrer: Option<String>,

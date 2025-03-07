@@ -72,7 +72,7 @@ pub async fn collector_stats_js(
             (Status::Ok, content::RawJavaScript(analytics_js))
         }
         Err(e) => {
-            println!("Error inserting collector: {e:?}");
+            eprintln!("Error inserting collector: {e:?}");
 
             // Return a minimal fallback script with error details
             let error_js = format!(
@@ -165,9 +165,6 @@ fn generate_analytics_js(collector_id: &str, app_url: &str) -> String {
                 url: url_override || window.location.href,
                 referrer: referrer,
             }};
-
-            console.log("📼 [send] endpoint: ", endpoint);
-            console.log("📼 [send] data: ", data);
 
             fetch(endpoint, {{
                 method: "POST",
