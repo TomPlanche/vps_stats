@@ -18,6 +18,7 @@ use website_stats::{
         summary::{
             summary_get_browsers, summary_get_events, summary_get_five_minutes, summary_get_hourly,
             summary_get_os_browsers, summary_get_percentages, summary_get_referrers,
+            summary_get_urls, summary_get_weekly_event_counts,
         },
     },
 };
@@ -81,7 +82,9 @@ fn rocket() -> _ {
                 summary_get_hourly,
                 summary_get_os_browsers,
                 summary_get_percentages,
-                summary_get_referrers
+                summary_get_referrers,
+                summary_get_urls,
+                summary_get_weekly_event_counts
             ],
         )
         .mount("/stats.js", routes![collector_stats_js])

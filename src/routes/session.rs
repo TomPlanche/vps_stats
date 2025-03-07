@@ -37,7 +37,7 @@ pub async fn session_get_sessions(conn: DbConn) -> Json<serde_json::Value> {
 pub async fn session_get_map_data(conn: DbConn) -> Json<serde_json::Value> {
     match map(&conn).await {
         Ok(data) => ApiResponse::success(json!({
-            "data": data
+            "cities": data
         })),
         Err(err) => ApiResponse::internal_error(&format!("Failed to retrieve map data: {err}")),
     }

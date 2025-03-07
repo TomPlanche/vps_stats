@@ -343,7 +343,7 @@ pub async fn referrers(conn: &DbConn) -> QueryResult<Vec<ReferrerCount>> {
     }
 }
 
-#[derive(QueryableByName, Serialize, Deserialize)]
+#[derive(QueryableByName, Serialize, Deserialize, Debug)]
 pub struct HourlyEventCounts {
     #[diesel(sql_type = Integer)]
     pub day: i32, // 0 is Sunday and 6 is Saturday
@@ -365,30 +365,22 @@ pub struct HourlyEventCounts {
 /// ## Returns
 /// `QueryResult<Vec<HourlyEventCounts>>` containing event counts grouped by day of week and hour of day.
 pub async fn weekly(conn: &DbConn) -> QueryResult<Vec<HourlyEventCounts>> {
-    let start_time = Utc::now().naive_utc() - Duration::days(7);
+    let sql = "\
+SELECT CAST(STRFTIME('%w', created_at) AS INTEGER) AS day,
+        CAST(STRFTIME('%H', created_at) AS INTEGER) AS hour,
+        COUNT(*)                                    AS count
+FROM event
+WHERE created_at >= DATETIME('now', '-7 days')
+GROUP BY day, hour;";
 
-    let sql = "
-        SELECT CAST(STRFTIME('%w', created_at) AS INTEGER) AS day,
-               CAST(STRFTIME('%H', created_at) AS INTEGER) AS hour,
-               COUNT(*)                                    AS count
-        FROM event
-        WHERE created_at >= DATETIME('now', '-7 days')
-        GROUP BY day, hour;
-    ";
+    println!("Executing SQL query: {}", sql);
 
     match conn
-        .run(move |c| {
-            sql_query(sql)
-                .bind::<Timestamp, _>(start_time)
-                .load::<HourlyEventCounts>(c)
-        })
+        .run(move |c| sql_query(sql).load::<HourlyEventCounts>(c))
         .await
     {
         Ok(query) => Ok(query),
-        Err(e) => {
-            eprintln!("Failed to load weekly event counts: {e}");
-            Err(Error::NotFound)
-        }
+        Err(_) => Err(Error::NotFound),
     }
 }
 

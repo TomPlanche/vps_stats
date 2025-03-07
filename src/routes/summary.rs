@@ -4,7 +4,9 @@ use serde_json::{Value, json};
 use crate::{
     DbConn,
     api_response::ApiResponse,
-    models::{browsers, events, five_minutes, hourly, os_browsers, percentages, referrers, weekly},
+    models::{
+        browsers, events, five_minutes, hourly, os_browsers, percentages, referrers, urls, weekly,
+    },
 };
 
 /// # `summary_get_five_minutes`
@@ -123,7 +125,7 @@ pub async fn summary_get_referrers(conn: DbConn) -> Json<Value> {
 ///
 /// ## Returns
 /// * `Json<Value>` - The weekly event counts for the last 7 days.
-#[get("/weekly_event_counts")]
+#[get("/weekly")]
 pub async fn summary_get_weekly_event_counts(conn: DbConn) -> Json<Value> {
     match weekly(&conn).await {
         Ok(summary) => ApiResponse::success(json!({
@@ -133,7 +135,7 @@ pub async fn summary_get_weekly_event_counts(conn: DbConn) -> Json<Value> {
     }
 }
 
-/// # `percentages`
+/// # `summary_get_percentages`
 /// Calculates percentage changes in traffic volume between current and previous time periods (day, week, month) to show growth or decline trends.
 ///
 /// ## Arguments
@@ -144,6 +146,23 @@ pub async fn summary_get_weekly_event_counts(conn: DbConn) -> Json<Value> {
 #[get("/percentages")]
 pub async fn summary_get_percentages(conn: DbConn) -> Json<Value> {
     match percentages(&conn).await {
+        Ok(summary) => ApiResponse::success(json!({
+            "summary": summary
+        })),
+        Err(err) => ApiResponse::internal_error(&format!("Failed to retrieve map data: {err}")),
+    }
+}
+
+/// # `summary_get_urls`
+/// Retrieves the top 25 most visited URLs from the past 7 days, ordered by visit count.
+///
+/// ## Arguments * `conn` - The database connection.
+///
+/// ## Returns
+/// * `Json<Value>` - The top 25 most visited URLs from the past 7 days, ordered by visit count.
+#[get("/urls")]
+pub async fn summary_get_urls(conn: DbConn) -> Json<Value> {
+    match urls(&conn).await {
         Ok(summary) => ApiResponse::success(json!({
             "summary": summary
         })),
