@@ -12,7 +12,7 @@ impl Fairing for Cors {
     fn info(&self) -> Info {
         Info {
             name: "Cross-Origin-Resource-Sharing Fairing",
-            kind: Kind::Response | Kind::Options,
+            kind: Kind::Response,
         }
     }
 
@@ -26,10 +26,7 @@ impl Fairing for Cors {
             .get_one("Origin")
             .unwrap_or("http://localhost:5173");
 
-        response.set_header(Header::new(
-            "Access-Control-Allow-Origin",
-            allowed_origin,
-        ));
+        response.set_header(Header::new("Access-Control-Allow-Origin", allowed_origin));
         response.set_header(Header::new(
             "Access-Control-Allow-Methods",
             "GET, POST, PUT, DELETE, OPTIONS",
