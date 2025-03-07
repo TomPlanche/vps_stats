@@ -1,3 +1,4 @@
+use crate::AppState;
 use crate::api_response::ApiResponse;
 use crate::{
     DbConn,
@@ -5,6 +6,7 @@ use crate::{
     paginated::set_pagination_defaults,
 };
 use regex::Regex;
+use rocket::State;
 use rocket::{get, post, serde::json::Json};
 use serde_json::{Value, json};
 use url::Url;
@@ -19,13 +21,19 @@ use url::Url;
 /// ## Panics
 /// If the regex pattern is invalid.
 #[post("/", format = "application/json", data = "<event_data>")]
-pub async fn event_insert(event_data: Json<EventQuery>, conn: DbConn) -> Json<serde_json::Value> {
+pub async fn event_insert(
+    event_data: Json<EventQuery>,
+    state: &State<AppState>,
+    conn: DbConn,
+) -> Json<serde_json::Value> {
     let localhost_regex = Regex::new(r"http://(127\.0\.0\.1|localhost|0\.0\.0\.0|\[::1\])(:\d+)?")
         .expect("Invalid regex pattern");
 
     // Block local requests in production
-    if localhost_regex.is_match(&event_data.url) {
-        return ApiResponse::bad_request("Local URLs are not allowed in production");
+    if !state.dev_mode {
+        if localhost_regex.is_match(&event_data.url) {
+            return ApiResponse::bad_request("Local URLs are not allowed in production");
+        }
     }
 
     // Clean URL
