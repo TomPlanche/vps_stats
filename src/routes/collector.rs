@@ -166,6 +166,9 @@ fn generate_analytics_js(collector_id: &str, app_url: &str) -> String {
                 referrer: referrer,
             }};
 
+            console.log("📼 [send] endpoint: ", endpoint);
+            console.log("📼 [send] data: ", data);
+
             fetch(endpoint, {{
                 method: "POST",
                 headers: {{
@@ -178,7 +181,7 @@ fn generate_analytics_js(collector_id: &str, app_url: &str) -> String {
                     // console.log("📼", data);
                 }})
                 .catch((rejected) => {{
-                    console.log("📼", "failed to collect");
+                    console.log(`📼 [send]`, "failed to collect");
                     console.error(rejected);
                 }});
         }}

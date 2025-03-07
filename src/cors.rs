@@ -21,6 +21,12 @@ impl Fairing for Cors {
         request: &'r rocket::Request<'_>,
         response: &mut rocket::Response<'r>,
     ) {
+        println!("CORS Fairing");
+        println!(
+            "Request came from: {:?}",
+            request.headers().get_one("Origin")
+        );
+
         let allowed_origin = request
             .headers()
             .get_one("Origin")
@@ -29,7 +35,7 @@ impl Fairing for Cors {
         response.set_header(Header::new("Access-Control-Allow-Origin", allowed_origin));
         response.set_header(Header::new(
             "Access-Control-Allow-Methods",
-            "GET, POST, PUT, DELETE, OPTIONS",
+            "GET, POST",
         ));
         response.set_header(Header::new(
             "Access-Control-Allow-Headers",
