@@ -1,0 +1,43 @@
+# System Architecture for Website Stats
+
+client: "Client Website" {
+  shape: rectangle
+  browser: "Web Browser" {
+    js: "stats.js Script"
+  }
+}
+
+stats_server: "Website Stats Server" {
+  shape: rectangle
+
+  api_layer: "API Layer" {
+    routes: "Routes"
+    handlers: "Handlers"
+  }
+
+  services: "Services" {
+    ip_location: "IP Location Service"
+  }
+
+  db_layer: "Database Layer" {
+    models: "Data Models"
+    queries: "Database Queries"
+  }
+
+  db: "SQLite Database" {
+    shape: cylinder
+  }
+}
+
+external: "External Services" {
+  ipinfo: "IPinfo API" {
+    shape: cloud
+  }
+}
+
+# Data flow connections
+client.browser.js -> stats_server.api_layer: "HTTP Requests"
+stats_server.api_layer -> stats_server.services: "Processes"
+stats_server.services -> external.ipinfo: "Geolocation Lookup"
+stats_server.services -> stats_server.db_layer: "Database Operations"
+stats_server.db_layer -> stats_server.db: "SQL Queries"

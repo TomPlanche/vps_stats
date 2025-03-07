@@ -1,0 +1,35 @@
+# Database Schema for Website Stats
+
+city: {
+  shape: sql_table
+  id: INTEGER PRIMARY KEY AUTOINCREMENT
+  name: TEXT NOT NULL
+  country: TEXT NOT NULL
+  latitude: REAL
+  longitude: REAL
+  created_at: TIMESTAMP
+}
+
+collector: {
+  shape: sql_table
+  id: TEXT PRIMARY KEY
+  origin: TEXT NOT NULL
+  city_id: INTEGER NOT NULL
+  os: TEXT
+  browser: TEXT
+  created_at: TIMESTAMP
+}
+
+event: {
+  shape: sql_table
+  id: TEXT PRIMARY KEY
+  url: TEXT NOT NULL
+  referrer: TEXT
+  name: TEXT NOT NULL
+  collector_id: TEXT NOT NULL
+  created_at: TIMESTAMP
+}
+
+# Relationships
+city.id <- collector.city_id: "1:N"
+collector.id <- event.collector_id: "1:N"

@@ -1,0 +1,46 @@
+# Sequence Diagram for Visitor Tracking
+
+browser: "Web Browser" {
+  shape: rectangle
+}
+
+stats_js: "stats.js Script" {
+  shape: rectangle
+}
+
+api: "Website Stats API" {
+  shape: rectangle
+}
+
+ipinfo: "IPinfo API" {
+  shape: rectangle
+}
+
+db: "Database" {
+  shape: cylinder
+}
+
+# Initial page load
+browser -> api: "1. Request page with stats.js"
+api -> ipinfo: "2. Lookup visitor IP"
+ipinfo -> api: "3. Return geolocation data"
+api -> db: "4. Store/retrieve city info"
+api -> db: "5. Create collector (visitor) record"
+api -> browser: "6. Return stats.js with collector ID"
+
+# Browser loads script
+browser -> stats_js: "7. Execute tracking script"
+stats_js -> api: "8. Send 'page_view' event"
+api -> db: "9. Store page view event"
+api -> stats_js: "10. Confirm event recorded"
+
+# User interaction
+browser -> stats_js: "11. User clicks link"
+stats_js -> api: "12. Send 'click' event"
+api -> db: "13. Store click event"
+api -> stats_js: "14. Confirm event recorded"
+
+# User leaves page
+browser -> stats_js: "15. User exits page"
+stats_js -> api: "16. Send 'exit' event"
+api -> db: "17. Store exit event"

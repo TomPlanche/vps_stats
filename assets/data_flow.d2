@@ -1,0 +1,50 @@
+# Data Flow for Website Stats
+
+user: "Website Visitor" {
+  shape: person
+}
+
+browser: "Web Browser" {
+  js_script: "stats.js Script"
+  events: "User Actions"
+}
+
+stats_api: "Stats API" {
+  collector_endpoint: "/stats.js" {
+    shape: rectangle
+  }
+  event_endpoint: "/event" {
+    shape: rectangle
+  }
+  city_endpoint: "/city" {
+    shape: rectangle
+  }
+}
+
+geolocation: "Geolocation Service" {
+  ipinfo: "IPinfo API"
+}
+
+database: "Database" {
+  shape: cylinder
+  city_table: "City Table"
+  collector_table: "Collector Table"
+  event_table: "Event Table"
+}
+
+analytics: "Analytics Endpoints" {
+  summary: "/summary/*"
+  sessions: "/session/*"
+}
+
+# Data flow
+user -> browser.events: "1. Interacts with site"
+browser.events -> browser.js_script: "2. Triggers tracking"
+browser -> stats_api.collector_endpoint: "3. Loads tracking code"
+stats_api.collector_endpoint -> geolocation.ipinfo: "4. IP lookup"
+geolocation.ipinfo -> stats_api.city_endpoint: "5. City data"
+stats_api.city_endpoint -> database.city_table: "6. Store city"
+browser.js_script -> stats_api.event_endpoint: "7. Send event data"
+stats_api.event_endpoint -> database.collector_table: "8. Store visitor"
+stats_api.event_endpoint -> database.event_table: "9. Store event"
+database -> analytics: "10. Query for analytics"
