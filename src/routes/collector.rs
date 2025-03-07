@@ -25,7 +25,7 @@ use crate::{
 /// ## Returns
 /// * `(Status, content::RawJavaScript<String>)`
 #[get("/")]
-pub async fn stats_js(
+pub async fn collector_stats_js(
     ip: IpAddr,
     state: &State<AppState>,
     user_agent_info: UserAgentInfo,

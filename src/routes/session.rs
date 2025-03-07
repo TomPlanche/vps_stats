@@ -16,7 +16,7 @@ use crate::{
 /// ## Returns
 /// * `Json<serde_json::Value>` - The JSON response containing the sessions.
 #[get("/")]
-pub async fn get_sessions(conn: DbConn) -> Json<serde_json::Value> {
+pub async fn session_get_sessions(conn: DbConn) -> Json<serde_json::Value> {
     match retrieve_sessions(&conn).await {
         Ok(sessions) => ApiResponse::success(json!({
             "sessions": sessions
@@ -34,7 +34,7 @@ pub async fn get_sessions(conn: DbConn) -> Json<serde_json::Value> {
 /// ## Returns
 /// * `Json<serde_json::Value>` - The JSON response containing the map data.
 #[get("/map")]
-pub async fn get_map_data(conn: DbConn) -> Json<serde_json::Value> {
+pub async fn session_get_map_data(conn: DbConn) -> Json<serde_json::Value> {
     match map(&conn).await {
         Ok(data) => ApiResponse::success(json!({
             "data": data

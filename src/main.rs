@@ -12,9 +12,13 @@ use website_stats::{
     cors::Cors,
     routes::{
         city::{city_get, city_insert},
-        collector::stats_js,
+        collector::collector_stats_js,
         event::{event_get, event_insert},
-        session::{get_map_data, get_sessions},
+        session::{session_get_map_data, session_get_sessions},
+        summary::{
+            summary_get_browsers, summary_get_events, summary_get_five_minutes, summary_get_hourly,
+            summary_get_os_browsers, summary_get_percentages, summary_get_referrers,
+        },
     },
 };
 
@@ -62,8 +66,23 @@ fn rocket() -> _ {
         .manage(app_state)
         .register("/", catchers![default_catcher])
         .mount("/", routes![root])
-        .mount("/event", routes![event_insert, event_get])
         .mount("/city", routes![city_insert, city_get])
-        .mount("/session", routes![get_sessions, get_map_data])
-        .mount("/stats.js", routes![stats_js])
+        .mount("/event", routes![event_insert, event_get])
+        .mount(
+            "/session",
+            routes![session_get_sessions, session_get_map_data],
+        )
+        .mount(
+            "/summary",
+            routes![
+                summary_get_browsers,
+                summary_get_events,
+                summary_get_five_minutes,
+                summary_get_hourly,
+                summary_get_os_browsers,
+                summary_get_percentages,
+                summary_get_referrers
+            ],
+        )
+        .mount("/stats.js", routes![collector_stats_js])
 }

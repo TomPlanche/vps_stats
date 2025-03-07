@@ -3,7 +3,7 @@ use diesel::{
     BelongingToDsl, ExpressionMethods, GroupedBy, QueryDsl, QueryResult, RunQueryDsl,
     prelude::QueryableByName,
     result::Error,
-    sql_types::{BigInt, Float, Text},
+    sql_types::{BigInt, Float, Text, Timestamp},
     sqlite::Sqlite,
 };
 use serde::{Deserialize, Serialize};
@@ -136,7 +136,7 @@ pub async fn map(conn: &DbConn) -> QueryResult<Vec<CityCollectorCount>> {
     let results: Vec<CityCount> = match conn
         .run(move |c| {
             diesel::sql_query(query)
-                .bind::<diesel::sql_types::Timestamp, _>(seven_days_ago)
+                .bind::<Timestamp, _>(seven_days_ago)
                 .load::<CityCount>(c)
         })
         .await
@@ -153,6 +153,7 @@ pub async fn map(conn: &DbConn) -> QueryResult<Vec<CityCollectorCount>> {
     let mut city_counts: Vec<CityCollectorCount> = Vec::new();
 
     for city_count in results {
+        #[allow(clippy::cast_precision_loss)]
         let relative_size = (city_count.count / max_count) as f32;
         city_counts.push(CityCollectorCount {
             city: city_count.name,
