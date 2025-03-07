@@ -16,7 +16,7 @@ Website Stats is a lightweight, privacy-friendly web analytics tool built with R
 
 ### Database Schema
 
-![Database Schema](assets/database_schema.svg)
+![Database Schema](assets/database_schema.png)
 
 The database schema diagram illustrates the data model with three core tables:
 - `city` - Stores geographic location data
@@ -25,19 +25,19 @@ The database schema diagram illustrates the data model with three core tables:
 
 ### System Architecture
 
-![System Architecture](assets/system_architecture.svg)
+![System Architecture](assets/system_architecture.png)
 
 This diagram shows the overall components of the Website Stats system and how they interact, from the client-side script to the server-side API and database.
 
 ### Data Flow
 
-![Data Flow](assets/data_flow.svg)
+![Data Flow](assets/data_flow.png)
 
 The data flow diagram traces how visitor data moves through the system, from initial collection to storage and analysis.
 
 ### Sequence Diagram
 
-![Sequence Diagram](assets/sequence_diagram.svg)
+![Sequence Diagram](assets/sequence_diagram.png)
 
 This sequence diagram shows the temporal flow of operations when tracking a visitor, from initial page load to user interactions and page exit.
 
