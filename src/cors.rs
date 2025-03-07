@@ -12,24 +12,37 @@ impl Fairing for Cors {
     fn info(&self) -> Info {
         Info {
             name: "Cross-Origin-Resource-Sharing Fairing",
-            kind: Kind::Response,
+            kind: Kind::Response | Kind::Options,
         }
     }
 
     async fn on_response<'r>(
         &self,
-        _request: &'r rocket::Request<'_>,
+        request: &'r rocket::Request<'_>,
         response: &mut rocket::Response<'r>,
     ) {
+        let allowed_origin = request
+            .headers()
+            .get_one("Origin")
+            .unwrap_or("http://localhost:5173");
+
         response.set_header(Header::new(
             "Access-Control-Allow-Origin",
-            "http://localhost:3000",
+            allowed_origin,
         ));
         response.set_header(Header::new(
             "Access-Control-Allow-Methods",
             "GET, POST, PUT, DELETE, OPTIONS",
         ));
-        response.set_header(Header::new("Access-Control-Allow-Headers", "Content-Type"));
+        response.set_header(Header::new(
+            "Access-Control-Allow-Headers",
+            "Content-Type, Authorization",
+        ));
         response.set_header(Header::new("Access-Control-Allow-Credentials", "true"));
+
+        if request.method() == rocket::http::Method::Options {
+            response.set_header(Header::new("Access-Control-Max-Age", "86400"));
+            response.set_status(rocket::http::Status::NoContent);
+        }
     }
-} 
+}
