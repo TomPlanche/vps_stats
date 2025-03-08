@@ -108,16 +108,22 @@
         <script src="ui/third-party/globegl.js"></script>
         <script src="ui/script.js"></script>
         <script>
-            // Stats analytics
-            var head =
-                document.head || document.getElementsByTagName("head")[0];
-            var script = document.createElement("script");
-            script.setAttribute("src", "stats.js");
-            script.setAttribute("onload", () => window.stats_collect());
-            script.setAttribute("type", "text/javascript");
-            script.setAttribute("charset", "utf8");
-            script.setAttribute("async", "");
-            head.appendChild(script);
+            fetch("https://api.ipify.org?format=json")
+                .then((response) => response.json())
+                .then((data) => {
+                    console.log("User IP:", data.ip);
+                    // Stats analytics
+                    var head =
+                        document.head ||
+                        document.getElementsByTagName("head")[0];
+                    var script = document.createElement("script");
+                    script.setAttribute("src", `stats.js?ip=${data.ip}`);
+                    script.setAttribute("onload", () => window.stats_collect());
+                    script.setAttribute("type", "text/javascript");
+                    script.setAttribute("charset", "utf8");
+                    script.setAttribute("async", "");
+                    head.appendChild(script);
+                });
         </script>
     </body>
 </html>
