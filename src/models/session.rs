@@ -11,7 +11,7 @@ use serde::{Deserialize, Serialize};
 use crate::{
     DbConn,
     models::{self, CollectorWithEvents, Event},
-    schema::{collector, event},
+    schema::{city, collector, event},
 };
 
 /// # `retrieve_sessions`
@@ -29,13 +29,22 @@ pub async fn retrieve_sessions(conn: &DbConn) -> QueryResult<Vec<CollectorWithEv
     let last_30_collectors = match conn
         .run(move |c| {
             collector::table
+                .inner_join(city::table)
+                .select((collector::all_columns, city::name, city::country))
                 .order(collector::created_at.desc())
                 .limit(30)
-                .load::<models::Collector>(c)
+                .load::<(models::Collector, String, String)>(c)
         })
         .await
     {
-        Ok(collectors) => collectors,
+        Ok(collectors_with_city) => collectors_with_city
+            .into_iter()
+            .map(|(mut collector, city_name, country)| {
+                // Store city info in the origin field since we don't want to modify the struct
+                collector.origin = format!("{city_name}, {country}");
+                collector
+            })
+            .collect::<Vec<models::Collector>>(),
         Err(err) => {
             eprintln!("Error loading collectors: {err:?}");
             return Err(Error::NotFound);

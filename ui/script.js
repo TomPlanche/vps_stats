@@ -257,18 +257,18 @@ async function renderSessions() {
   sessionsDiv.innerHTML = `
     <div class="sessions">
       ${sessions
-    .map((session) => {
-      const duration = prettyPrintTimeDifference(
-        session.events[0]?.created_at,
-        session.events[session.events.length - 1]?.created_at,
-      );
+        .map((session) => {
+          const duration = prettyPrintTimeDifference(
+            session.events[0]?.created_at,
+            session.events[session.events.length - 1]?.created_at,
+          );
 
-      return `<div class="session">
+          return `<div class="session">
               <div class="top">
                 <div class="left">
                 ${session.events?.length} event${
-        session.events?.length !== 1 ? "s" : ""
-      } → from ${session.collector.city}, ${session.collector.country}
+            session.events?.length !== 1 ? "s" : ""
+          } → from ${session.collector.origin}
                 </div>
                 <div class="right">
                   <div class="duration">
@@ -279,44 +279,39 @@ async function renderSessions() {
                 </div>
               </div>
 
-        <div class="events">
-            ${session.events
-        // .reverse()
-        .map((event) => {
-          let host, path;
+              <div class="events">
+                ${session.events
+                  .map((event) => {
+                    let host, path;
 
-          try {
-            const urlObj = new URL(event.url);
-            host = urlObj.host;
-            path = urlObj.pathname + urlObj.search;
-          } catch (err) {
-            host = "";
-            path = event.url;
-          }
+                    try {
+                      const urlObj = new URL(event.url);
+                      host = urlObj.host;
+                      path = urlObj.pathname + urlObj.search;
+                    } catch (err) {
+                      host = "";
+                      path = event.url;
+                    }
 
-          return `
-                <div class="event">
-                  <div class="left">
-                      <div class="name">${event.name}</div>
-                      <div class="host">${host}</div>
-                      <div class="path">${path}</div>
-                  </div>
-                  <div class="right">
-                      <div class="time">${formatFromNow(event.created_at)}</div>
-                  </div>
-                </div>
-                `;
+                    return `
+                      <div class="event">
+                        <div class="left">
+                            <div class="name">${event.name}</div>
+                            <div class="host">${host}</div>
+                            <div class="path">${path}</div>
+                        </div>
+                        <div class="right">
+                            <div class="time">${formatFromNow(event.created_at)}</div>
+                        </div>
+                      </div>
+                    `;
+                  })
+                  .join("")}
+              </div>
+          </div>`;
         })
         .join("")}
-          </div>
-      </div>
-          `;
-    })
-    .join("")}
-
-
-                </div>
-            `;
+    </div>`;
 }
 
 async function renderSummary() {
