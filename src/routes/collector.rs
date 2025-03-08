@@ -24,9 +24,9 @@ use crate::{
 ///
 /// ## Returns
 /// * `(Status, content::RawJavaScript<String>)`
-#[get("/")]
+#[get("/?<ip>")]
 pub async fn collector_stats_js(
-    ip: IpAddr,
+    ip: Option<String>,
     state: &State<AppState>,
     user_agent_info: UserAgentInfo,
     conn: DbConn,
@@ -34,7 +34,10 @@ pub async fn collector_stats_js(
     let ip = if state.dev_mode {
         IpAddr::V4(Ipv4Addr::new(215, 204, 222, 212))
     } else {
-        ip
+        ip.as_ref()
+            .filter(|ip_str| !ip_str.is_empty())
+            .and_then(|ip_str| ip_str.parse::<IpAddr>().ok())
+            .unwrap_or_else(|| IpAddr::V4(Ipv4Addr::new(215, 204, 222, 212)))
     };
 
     let city_to_create = City::from_ip(&ip.to_string()).await.unwrap_or_default();
