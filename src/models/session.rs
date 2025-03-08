@@ -120,19 +120,16 @@ pub struct CityCount {
 ///   - City name
 ///   - Display color
 pub async fn map(conn: &DbConn) -> QueryResult<Vec<CityCollectorCount>> {
-    // Calculate the timestamp for 7 days ago
     let seven_days_ago = Utc::now().naive_utc() - Duration::days(7);
 
-    // SQL query to get collector counts per city
     let query = "
         SELECT ci.name, ci.latitude, ci.longitude, COUNT(*) AS count
         FROM collector co
         JOIN city ci ON ci.id = co.city_id
         WHERE co.created_at >= ?
-        GROUP BY ci.name, ci.latitude, ci.longitude
+        GROUP BY ci.name, ci.latitude, ci.longitude;
     ";
 
-    // Execute the query and handle potential errors
     let results: Vec<CityCount> = match conn
         .run(move |c| {
             diesel::sql_query(query)
