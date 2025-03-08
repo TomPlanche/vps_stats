@@ -420,7 +420,7 @@ pub async fn percentages(conn: &DbConn) -> QueryResult<serde_json::Value> {
         ("month", "-1 month", "-2 months"),
     ];
 
-    let mut changes = serde_json::Map::new();
+    let mut changes: Vec<(&str, f64)> = Vec::new();
 
     for (label, current_interval, previous_interval) in intervals {
         let query = format!(
@@ -439,8 +439,19 @@ pub async fn percentages(conn: &DbConn) -> QueryResult<serde_json::Value> {
             0.0
         };
 
-        changes.insert(label.to_string(), json!(change));
+        changes.push((label, change));
     }
 
-    Ok(serde_json::Value::Object(changes))
+    let json_changes = changes
+        .into_iter()
+        .map(|(label, change)| {
+            (
+                label.to_string(),
+                json!(if change.is_infinite() { 0f64 } else { change }),
+            )
+        })
+        .collect::<serde_json::Map<String, serde_json::Value>>()
+        .into();
+
+    Ok(json_changes)
 }

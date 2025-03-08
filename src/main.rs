@@ -1,6 +1,7 @@
 use rocket::{
     Request, catch, catchers,
     figment::Figment,
+    fs::FileServer,
     http::Status,
     launch, options, routes,
     serde::json::{Json, Value, json},
@@ -93,4 +94,5 @@ fn rocket() -> _ {
             ],
         )
         .mount("/stats.js", routes![collector_stats_js])
+        .mount("/ui", FileServer::from("ui"))
 }
