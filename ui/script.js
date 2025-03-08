@@ -47,7 +47,7 @@ function mapHourlyEventsToLocalTime(events) {
     });
 
     // Translate UTC event times to local timezone and assign counts
-    events.forEach((event) => {
+    for (const event of events) {
         // Assumes input is in ISO format and thus interprets as UTC
         const eventDateUTC = new Date(event.hour + "Z");
 
@@ -74,7 +74,7 @@ function mapHourlyEventsToLocalTime(events) {
 }
 
 async function renderHourlySummary() {
-    const response = await fetch("stats/summary/hourly");
+    const response = await fetch("/stats/summary/hourly");
     const hourlyEvents = (await response.json()).data.summary;
     const hourlyDiv = document.getElementById("hourly");
     const localEvents = mapHourlyEventsToLocalTime(hourlyEvents);
@@ -109,7 +109,7 @@ async function renderHourlySummary() {
 }
 
 async function renderUrls() {
-    const response = await fetch("stats/summary/urls");
+    const response = await fetch("/stats/summary/urls");
     const urls = (await response.json()).data.summary;
     const urlsDiv = document.getElementById("urls");
 
@@ -153,7 +153,7 @@ async function renderUrls() {
 }
 
 async function renderBrowsers() {
-    const response = await fetch("stats/summary/osbrowsers");
+    const response = await fetch("/stats/summary/osbrowsers");
     const urls = (await response.json()).data.summary;
     const urlsDiv = document.getElementById("browsers");
 
@@ -184,7 +184,7 @@ async function renderBrowsers() {
 }
 
 async function renderReferrers() {
-    const response = await fetch("stats/summary/referrers");
+    const response = await fetch("/stats/summary/referrers");
     const urls = (await response.json()).data.summary;
     const urlsDiv = document.getElementById("referrers");
 
@@ -249,7 +249,7 @@ function prettyPrintTimeDifference(utcTimestamp1, utcTimestamp2) {
 }
 
 async function renderSessions() {
-    const response = await fetch("stats/session/");
+    const response = await fetch("/stats/session/");
     const sessions = (await response.json()).data.sessions;
     const sessionsDiv = document.getElementById("sessions");
 
@@ -319,7 +319,7 @@ async function renderSessions() {
 }
 
 async function renderSummary() {
-    const summaryResponse = await fetch("stats/summary/events");
+    const summaryResponse = await fetch("/stats/summary/events");
     const summary = (await summaryResponse.json()).data.summary;
     Object.keys(summary).forEach((key) => {
         const element = document.getElementById(key);
@@ -349,7 +349,7 @@ const renderSinglePercentageChange = (element, percentage) => {
 };
 
 async function renderPercentageChanges() {
-    const percentagesResponse = await fetch("stats/summary/percentages");
+    const percentagesResponse = await fetch("/stats/summary/percentages");
     const percentages = (await percentagesResponse.json()).data.summary;
 
 
@@ -393,7 +393,7 @@ function convertUtcToLocal(utcDay, utcHour, offset) {
 }
 
 async function renderWeeklyHeatmap() {
-    const response = await fetch("stats/summary/weekly");
+    const response = await fetch("/stats/summary/weekly");
     const utcEventCounts = (await response.json()).data.summary;
     const heatmapDiv = document.getElementById("weekly");
 
@@ -449,7 +449,7 @@ async function renderWeeklyHeatmap() {
 let world;
 
 async function renderGlobe() {
-    const response = await fetch("stats/session/map");
+    const response = await fetch("/stats/session/map");
     const coordinates = (await response.json()).data.cities;
     const globeDiv = document.getElementById("globe");
     const globeLeaderboardDiv = document.getElementById("globeleaderboard");
