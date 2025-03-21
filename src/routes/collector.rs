@@ -3,7 +3,7 @@ use rocket::{
     http::Status,
     response::content::{self},
 };
-use std::net::{IpAddr, Ipv4Addr};
+use std::net::{IpAddr, Ipv6Addr};
 
 use crate::{
     AppState, DbConn, UserAgentInfo,
@@ -31,13 +31,17 @@ pub async fn collector_stats_js(
     user_agent_info: UserAgentInfo,
     conn: DbConn,
 ) -> (Status, content::RawJavaScript<String>) {
+    let fake_ip = IpAddr::V6(Ipv6Addr::new(
+        8193, 2072, 55895, 24832, 53586, 6083, 59637, 65141,
+    ));
+
     let ip = if state.dev_mode {
-        IpAddr::V4(Ipv4Addr::new(215, 204, 222, 212))
+        fake_ip
     } else {
         ip.as_ref()
             .filter(|ip_str| !ip_str.is_empty())
             .and_then(|ip_str| ip_str.parse::<IpAddr>().ok())
-            .unwrap_or_else(|| IpAddr::V4(Ipv4Addr::new(66, 131, 120, 255)))
+            .unwrap_or_else(|| fake_ip)
     };
 
     let city_to_create = City::from_ip(&ip.to_string()).await.unwrap_or_default();

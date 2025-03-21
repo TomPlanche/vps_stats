@@ -1,6 +1,7 @@
 use rocket::{
     Request,
     fairing::{Fairing, Info, Kind},
+    Response,
 };
 
 use crate::logger::Logger;
@@ -12,7 +13,7 @@ impl Fairing for RequestLogger {
     fn info(&self) -> Info {
         Info {
             name: "Request Logger",
-            kind: Kind::Request,
+            kind: Kind::Request | Kind::Response,
         }
     }
 
@@ -28,6 +29,17 @@ impl Fairing for RequestLogger {
         Logger::info(
             "Request",
             &format!("{method} {uri} from {remote_addr} ({user_agent})"),
+        );
+    }
+
+    async fn on_response<'r>(&self, request: &'r Request<'_>, response: &mut Response<'r>) {
+        let method = request.method();
+        let uri = request.uri();
+        let status = response.status();
+        
+        Logger::info(
+            "Response",
+            &format!("{method} {uri} responded with status {status}"),
         );
     }
 }
