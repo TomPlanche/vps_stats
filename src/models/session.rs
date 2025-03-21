@@ -3,7 +3,7 @@ use diesel::{
     BelongingToDsl, ExpressionMethods, GroupedBy, QueryDsl, QueryResult, RunQueryDsl,
     prelude::QueryableByName,
     result::Error,
-    sql_types::{BigInt, Float, Text, Timestamp},
+    sql_types::{Float, Integer, Text, Timestamp},
     sqlite::Sqlite,
 };
 use serde::{Deserialize, Serialize};
@@ -91,11 +91,11 @@ pub async fn retrieve_sessions(conn: &DbConn) -> QueryResult<Vec<CollectorWithEv
 pub struct CityCollectorCount {
     pub lat: f32,
     pub lng: f32,
-    pub size: f32,
+    pub size: f64,
     pub color: String,
     pub city: String,
 }
-#[derive(QueryableByName)]
+#[derive(QueryableByName, Debug)]
 #[diesel(check_for_backend(Sqlite))]
 pub struct CityCount {
     #[diesel(sql_type = Text)]
@@ -104,8 +104,8 @@ pub struct CityCount {
     pub latitude: f32,
     #[diesel(sql_type = Float)]
     pub longitude: f32,
-    #[diesel(sql_type = BigInt)]
-    pub count: i64,
+    #[diesel(sql_type = Integer)]
+    pub count: i32,
 }
 
 /// # `map`
@@ -159,8 +159,8 @@ pub async fn map(conn: &DbConn) -> QueryResult<Vec<CityCollectorCount>> {
     let mut city_counts: Vec<CityCollectorCount> = Vec::new();
 
     for city_count in results {
-        #[allow(clippy::cast_precision_loss)]
-        let relative_size = (city_count.count / max_count) as f32;
+        let relative_size = f64::from(city_count.count) / f64::from(max_count);
+
         city_counts.push(CityCollectorCount {
             city: city_count.name,
             lat: city_count.latitude,

@@ -41,7 +41,7 @@ pub async fn collector_stats_js(
         ip.as_ref()
             .filter(|ip_str| !ip_str.is_empty())
             .and_then(|ip_str| ip_str.parse::<IpAddr>().ok())
-            .unwrap_or_else(|| fake_ip)
+            .unwrap_or(fake_ip)
     };
 
     let city_to_create = City::from_ip(&ip.to_string()).await.unwrap_or_default();
