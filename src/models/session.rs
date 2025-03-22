@@ -160,13 +160,14 @@ pub async fn map(conn: &DbConn) -> QueryResult<Vec<CityCollectorCount>> {
 
     for city_count in results {
         let relative_size = f64::from(city_count.count) / f64::from(max_count);
+        let hue = 240.0 - (relative_size * 240.0);
 
         city_counts.push(CityCollectorCount {
             city: city_count.name,
             lat: city_count.latitude,
             lng: city_count.longitude,
-            size: relative_size,
-            color: "#fa4f33".to_string(),
+            size: 0.1,                              // Fixed size
+            color: format!("hsl({hue}, 70%, 50%)"), // Dynamic color based
         });
     }
 
