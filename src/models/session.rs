@@ -92,7 +92,8 @@ pub struct CityCollectorCount {
     pub lat: f32,
     pub lng: f32,
     pub size: f64,
-    pub color: String,
+    // color, vec of 3 u8, for r, g and b
+    pub color: Vec<u8>,
     pub city: String,
 }
 #[derive(QueryableByName, Debug)]
@@ -160,14 +161,17 @@ pub async fn map(conn: &DbConn) -> QueryResult<Vec<CityCollectorCount>> {
 
     for city_count in results {
         let relative_size = f64::from(city_count.count) / f64::from(max_count);
-        let hue = 240.0 - (relative_size * 240.0);
+        #[allow(clippy::cast_sign_loss, clippy::cast_possible_truncation)]
+        let r = (relative_size * 255.0) as u8;
+        #[allow(clippy::cast_sign_loss, clippy::cast_possible_truncation)]
+        let b = ((1.0 - relative_size) * 255.0) as u8;
 
         city_counts.push(CityCollectorCount {
             city: city_count.name,
             lat: city_count.latitude,
             lng: city_count.longitude,
-            size: 0.1,                              // Fixed size
-            color: format!("hsl({hue}, 70%, 50%)"), // Dynamic color based
+            size: 0.1,
+            color: vec![r, 0, b], // Simple blue-to-red transition
         });
     }
 
